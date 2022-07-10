@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEV SAMURAI - LISTA DE CONVIDADOS</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Lista de Convidados</h1>
+        <ul id="lista"></ul>
+        <label for="nome">Nome: </label>
+        <input id="nome" name="nome" type="text" placeholder="Digite o nome do convidado: " style="margin-bottom: 10px;"> <br>
+        <label for="idade">Idade: </label>
+        <input id="idade" name="nome" type="text" placeholder="Digite a idade do convidado: " style="margin-bottom: 10px;"><br>
+        <label for="cpf">CPF:</label>
+        <input id="cpf" name="cpf" type="text" placeholder="Digite o CPF do convidado: " style="margin-bottom: 10px;"><br>
+        <button id="botao" style="width: 220px;height: 50px; ">Cadastrar</button>
+    </div>
+    <script type="text/javascript">
+        //código js
+        var elLista = document.getElementById("lista")
+        var elNome = document.getElementById("nome")
+        var elIdade = document.getElementById("idade")
+        var elCpf = document.getElementById("cpf")
+        var elBotao = document.getElementById("botao")
+
+        var convidados = JSON.parse(localStorage.getItem("convidados")) || [];
+        var convidadosConfirmads = JSON.parse(localStorage.getItem("convidadosConfirmados")) || [];
+
+
+
+        elBotao.onclick = function() {
+            var nome = elNome.value;
+            var idade = elIdade.value;
+            var cpf = elCpf.value;
+            convidados.push({nome,idade,cpf, confirmado: false });
+            elNome.value = "";
+            elIdade.value = "";
+            elCpf.value = "";
+
+            salvarConvidados()
+            listarConvidados();
+
+        };
+
+        
+        function salvarConvidados(){
+            localStorage.setItem("convidados", JSON.stringify(convidados))
+        }
+
+        function listarConvidados(){
+            elLista.innerHTML = "";
+            for(const convidado of convidados){
+                var elConvidado = document.createElement("li");
+                var elTextConvidado = document.createTextNode(`Nome: ${convidado.nome} | Idade: ${convidado.idade} |  CPF: ${convidado.cpf}`);
+                elConvidado.setAttribute("style", "margin-bottom: 20px;")
+
+                var elExcluir = document.createElement("a")
+                
+                var elExcluirTexto = document.createTextNode("Excluir")
+                elExcluir.onclick = function() {
+                    convidados = convidados.filter(function(item){
+                        return item.nome != convidado.nome
+                    });
+                    salvarConvidados()
+                    listarConvidados();
+                }
+
+                var elConfirmar = document.createElement("a")
+                elConfirmar.setAttribute("href", "#")
+                if(convidado.confirmado === false){
+                    var elTextoConfirmar = document.createTextNode("Confirmar")
+                    elConfirmar.setAttribute("style", "margin-left: 20px; border: 1px solid #000; padding: 5px; border-radius: 5px; background: #777; text-decoration: none; color: #fff ")
+                }else{
+                    var elTextoConfirmar = document.createTextNode("Confirmado")
+                    elConfirmar.setAttribute("style", "margin-left: 20px; border: 1px solid #000; padding: 5px; border-radius: 5px; background: #00ff00; text-decoration: none; color: #000000 ")
+                }
+                elConfirmar.appendChild(elTextoConfirmar)
+                elConfirmar.onclick = function() {
+                    if(convidado.confirmado === false){
+                        convidado.confirmado = true ;
+                    }else{
+                        convidado.confirmado = false ;
+
+                    }
+                    
+                  salvarConvidados()
+                  listarConvidados()
+                };
+
+                
+
+
+                elExcluir.setAttribute("href", "#")
+                elExcluir.setAttribute("style", "margin-left: 20px; border: 1px solid #000; padding: 5px; border-radius: 5px; background: #777; text-decoration: none; color: #FFF ")
+                elExcluir.appendChild(elExcluirTexto)
+                
+
+                elConvidado.appendChild(elTextConvidado);
+                elConvidado.appendChild(elConfirmar)
+                elConvidado.appendChild(elExcluir)
+                
+                elLista.appendChild(elConvidado);
+            }
+        }
+
+        listarConvidados()
+
+    </script>
+</body>
+</html>
